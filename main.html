@@ -1,16 +1,111 @@
 <!DOCTYPE html>
-
-<html>
-
+<html lang="en">
 <head>
-	<link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Curried Function Demo</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 0;
+            background-color: #f4f4f9;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #444;
+        }
+        label {
+            font-weight: bold;
+        }
+        input {
+            width: 100%;
+            padding: 8px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+        }
+        button {
+            padding: 10px 20px;
+            background: orange;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: darkorange;
+        }
+        .output {
+            margin-top: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 4px solid orange;
+        }
+    </style>
 </head>
-
 <body>
-	<!-- the entire body must be written by student -->
-    <script type="text/javascript" src="./script.js">
-</script>
+    <div class="container">
+        <h1>Curried Function Demo</h1>
+        <label for="input">Enter Numbers (Comma Separated):</label>
+        <input type="text" id="input" placeholder="Example: 1, 2, 3">
+        <button id="addNumbers">Add Numbers</button>
+        <div class="output" id="output"></div>
+    </div>
 
+    <script>
+        // Curry Function Implementation
+        function curry(callback) {
+            const args = [];
+            function curried(...newArgs) {
+                if (newArgs.length === 0) {
+                    return callback(...args);
+                }
+                args.push(...newArgs);
+                return curried;
+            }
+            return curried;
+        }
+
+        // Example Callback Function: Sum of Numbers
+        const sum = (...numbers) => numbers.reduce((total, number) => total + number, 0);
+
+        // Create a Curried Version of Sum
+        const curriedSum = curry(sum);
+
+        // Interactivity with the HTML Page
+        const inputField = document.getElementById("input");
+        const addButton = document.getElementById("addNumbers");
+        const outputDiv = document.getElementById("output");
+
+        let curriedInstance = curriedSum; // Start a new curried instance
+
+        addButton.addEventListener("click", () => {
+            const input = inputField.value.trim();
+            if (input === "") {
+                // Call curried function with no arguments to finalize
+                const result = curriedInstance();
+                outputDiv.innerHTML = `<strong>Result:</strong> ${result}`;
+                curriedInstance = curriedSum; // Reset the curried instance
+            } else {
+                // Pass numbers to the curried function
+                const numbers = input.split(",").map(num => parseFloat(num.trim()));
+                curriedInstance = curriedInstance(...numbers);
+                outputDiv.innerHTML = `<strong>Partial Result:</strong> Function waiting for more arguments or an empty call.`;
+            }
+            inputField.value = ""; // Clear input
+        });
+    </script>
 </body>
-
 </html>
+
